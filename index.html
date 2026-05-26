@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
+                    colors: { espresso: '#3E2723', cream: '#F5E6D3', olive: '#8A9A5B', amber: '#D97706', darkbg: '#181412', darkcard: '#241D1A' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #8A9A5B; border-radius: 4px; }
+        .gsap-reveal { visibility: hidden; } /* Menyembunyikan elemen sebelum di-reveal GSAP */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+
+    <script>
+        // Logika Pilihan Tema Otomatis berdasarkan waktu (18:00 - 06:00 otomatis dark)
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && (new Date().getHours() >= 18 || new Date().getHours() < 6))) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="bg-cream text-espresso dark:bg-darkbg dark:text-cream transition-colors duration-500 overflow-x-hidden">
+
+    <nav
+        x-data="{ isScrolled: false, mobileMenuOpen: false }"
+        x-on:scroll.window="isScrolled = (window.scrollY > 20)"
+        :class="isScrolled ? 'bg-white shadow-md py-4 text-slate-800' : 'bg-transparent py-6 text-white'"
+        class="fixed w-full top-0 left-0 z-50 transition-all duration-300 ease-in-out font-sans"
+    >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+
+                <a href="#" class="flex items-center gap-2 font-bold text-xl tracking-tight transition-colors">
+                    <i class="ph-fill ph-cat text-2xl text-amber-500"></i>
+                    <span>Coffe</span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-8 font-medium text-sm uppercase tracking-wider">
+                    <a href="#menu" class="hover:text-amber-500 transition-colors">Menu</a>
+                    <a href="#why-us" class="hover:text-amber-500 transition-colors">Why Us</a>
+                    <a href="#reviews" class="hover:text-amber-500 transition-colors">Reviews</a>
+                    <a href="#booking" class="bg-orange-500 text-white px-5 py-2 rounded-full normal-case tracking-normal hover:bg-red-600 transition-all shadow-md">Reservasi</a>
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <button
+                        x-on:click="mobileMenuOpen = !mobileMenuOpen"
+                        class="focus:outline-none p-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                        aria-label="Toggle Menu"
+                    >
+                        <i x-show="!mobileMenuOpen" class="ph ph-list text-2xl"></i>
+                        <i x-show="mobileMenuOpen" class="ph ph-x text-2xl" x-cloak></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+       <div
+    x-show="mobileMenuOpen"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0 -translate-y-4"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100 translate-y-0"
+    x-transition:leave-end="opacity-0 -translate-y-4"
+    x-cloak
+
+    /* PERBAIKAN 1: Logika perubahan warna dipindah ke div utama ini */
+    :class="isScrolled ? 'bg-white text-slate-800 shadow-xl border-t border-gray-100' : 'bbg-transparent backdrop-blur-md text-white'"
+    class="md:hidden absolute top-full left-0 w-full transition-all duration-300"
+>
+    <div class="px-4 pt-4 pb-6 space-y-3 font-medium text-base">
+
+        <a x-on:click="mobileMenuOpen = false" href="#menu"
+           :class="isScrolled ? 'hover:bg-amber-50 hover:text-amber-600' : 'hover:bg-white/10 hover:text-amber-400'"
+           class="block py-3 px-4 rounded-xl transition-colors">Menu</a>
+
+        <a x-on:click="mobileMenuOpen = false" href="#why-us"
+           :class="isScrolled ? 'hover:bg-amber-50 hover:text-amber-600' : 'hover:bg-white/10 hover:text-amber-400'"
+           class="block py-3 px-4 rounded-xl transition-colors">Why Us</a>
+
+        <a x-on:click="mobileMenuOpen = false" href="#reviews"
+           :class="isScrolled ? 'hover:bg-amber-50 hover:text-amber-600' : 'hover:bg-white/10 hover:text-amber-400'"
+           class="block py-3 px-4 rounded-xl transition-colors">Reviews</a>
+
+        <div class="pt-2">
+            <a x-on:click="mobileMenuOpen = false" href="#booking" class="block w-full text-center bg-orange-500 text-white py-3 rounded-xl font-bold shadow-md hover:bg-amber-600 transition-colors">Reservasi Meja</a>
+        </div>
+    </div>
+</div>
+        </div>
+    </nav>
+
+    <section class="relative h-screen flex items-center justify-center">
+        <div class="absolute inset-0"><img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover brightness-50 dark:brightness-35"></div>
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center">
+            <span class="text-amber font-semibold tracking-widest uppercase text-sm mb-4 hero-elem">Plaza Festival, Kuningan</span>
+            <h1 class="text-4xl md:text-7xl font-serif font-bold text-white mb-6 hero-elem">Coffee. Comfort. <br/> <span class="italic text-amber">Conversations at 2AM.</span></h1>
+            <div class="flex flex-col sm:flex-row gap-4 hero-elem"><a href="#menu" class="px-8 py-4 bg-amber text-white rounded-full font-medium hover:scale-105 transition-transform">Lihat Menu</a><a href="#booking" class="px-8 py-4 bg-olive text-white rounded-full font-medium hover:scale-105 transition-transform">Reservasi Meja</a></div>
+        </div>
+    </section>
+
+    <section id="why-us" class="py-24 bg-white dark:bg-darkcard overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16 gsap-reveal">
+                <span class="uppercase tracking-[0.3em] text-amber text-sm font-semibold">Why Lucky Cat?</span>
+                <h2 class="text-4xl md:text-5xl font-serif font-bold mt-4 leading-tight">Kenapa Orang Selalu <br class="hidden md:block"> Balik Lagi ke Coffe?</h2>
+                <p class="mt-6 text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">Lebih dari sekadar tempat ngopi. Lucky Cat adalah ruang buat kerja, nongkrong, healing, ngobrol sampai pagi, atau sekadar menikmati suasana Jakarta yang nggak pernah tidur.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="group relative p-8 rounded-3xl bg-cream dark:bg-darkbg border border-transparent hover:border-amber/30 transition-all duration-500 hover:-translate-y-2 gsap-reveal overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber/5 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl bg-amber/10 flex items-center justify-center text-amber text-4xl group-hover:scale-110 transition duration-500"><i class="ph-fill ph-coffee"></i></div>
+                        <h3 class="font-bold text-2xl mt-6 mb-4">Specialty Coffee</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Menggunakan biji kopi berkualitas dengan rasa yang konsisten. Dari flat white creamy sampai long black yang bold — cocok buat nemenin pagi sampai tengah malam.</p>
+                    </div>
+                </div>
+                <div class="group relative p-8 rounded-3xl bg-cream dark:bg-darkbg border border-transparent hover:border-amber/30 transition-all duration-500 hover:-translate-y-2 gsap-reveal overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-olive/10 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl bg-amber/10 flex items-center justify-center text-amber text-4xl group-hover:scale-110 transition duration-500"><i class="ph-fill ph-moon-stars"></i></div>
+                        <h3 class="font-bold text-2xl mt-6 mb-4">Open 24 Hours</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Tempat ideal buat night owl Jakarta. Mau nongkrong habis kerja, nugas sampai subuh, atau cari suasana tenang jam 2 pagi — Coffe selalu buka.</p>
+                    </div>
+                </div>
+                <div class="group relative p-8 rounded-3xl bg-cream dark:bg-darkbg border border-transparent hover:border-amber/30 transition-all duration-500 hover:-translate-y-2 gsap-reveal overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber/10 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl bg-amber/10 flex items-center justify-center text-amber text-4xl group-hover:scale-110 transition duration-500"><i class="ph-fill ph-wifi-high"></i></div>
+                        <h3 class="font-bold text-2xl mt-6 mb-4">Work Friendly</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Wifi cepat, colokan melimpah, seating luas, dan ambience nyaman bikin tempat ini cocok buat kerja remote, meeting, atau ngerjain tugas.</p>
+                    </div>
+                </div>
+                <div class="group relative p-8 rounded-3xl bg-cream dark:bg-darkbg border border-transparent hover:border-amber/30 transition-all duration-500 hover:-translate-y-2 gsap-reveal overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber/10 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl bg-amber/10 flex items-center justify-center text-amber text-4xl group-hover:scale-110 transition duration-500"><i class="ph-fill ph-camera"></i></div>
+                        <h3 class="font-bold text-2xl mt-6 mb-4">Rustic Aesthetic</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Interior rustic modern dengan lighting hangat, pohon indoor, dan vibes cozy yang bikin setiap sudutnya Instagramable sekaligus relaxing.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-20 grid lg:grid-cols-2 gap-8 items-center">
+                <div class="relative rounded-[2rem] overflow-hidden h-[400px] gsap-reveal">
+                    <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover hover:scale-105 transition duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                    <div class="absolute bottom-8 left-8 text-white">
+                        <span class="uppercase tracking-[0.3em] text-xs text-amber">Jakarta Night Vibes</span>
+                        <h3 class="text-3xl font-serif font-bold mt-3 leading-tight">Coffee tastes better <br> after midnight.</h3>
+                    </div>
+                </div>
+
+                <div class="gsap-reveal">
+                    <span class="uppercase tracking-[0.3em] text-amber text-sm font-semibold">More Than A Cafe</span>
+                    <h2 class="text-4xl md:text-5xl font-serif font-bold mt-4 leading-tight">Tempat yang bikin <br> susah pulang.</h2>
+                    <p class="mt-6 text-gray-500 dark:text-gray-400 leading-relaxed">Banyak orang datang ke Lucky Cat bukan cuma buat kopi. Mereka datang karena suasananya. Tempat ini terasa hidup — ada yang kerja dengan laptop, ngobrol santai, ketawa bareng teman, sampai menikmati kota Jakarta yang masih terjaga.</p>
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        <div class="px-5 py-3 rounded-full bg-amber/10 text-amber font-medium text-sm">✦ Cozy Atmosphere</div>
+                        <div class="px-5 py-3 rounded-full bg-olive/10 text-olive font-medium text-sm">✦ 24 Hour Cafe</div>
+                        <div class="px-5 py-3 rounded-full bg-amber/10 text-amber font-medium text-sm">✦ Best for Hangout</div>
+                    </div>
+                    <div class="mt-10 flex flex-col sm:flex-row gap-4">
+                        <a href="#booking" class="px-8 py-4 bg-amber text-white rounded-full font-semibold hover:scale-105 transition-transform shadow-lg shadow-amber/20 text-center">Reserve Your Spot</a>
+                        <a href="#menu" class="px-8 py-4 border border-gray-300 dark:border-gray-700 rounded-full font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition duration-300 text-center">Explore Menu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="menu" class="py-24 bg-gray-50 dark:bg-[#1f1a18]">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between mb-12 gap-6 gsap-reveal">
+                <h2 class="text-3xl md:text-5xl font-serif font-bold">Best Menu</h2>
+
+            </div>
+            <div class="flex overflow-x-auto gap-2 pb-6 no-scrollbar gsap-reveal" id="category-tabs">
+                <button class="tab-btn px-6 py-3 rounded-full text-sm font-medium bg-amber text-white whitespace-nowrap" data-category="all">Semua</button>
+                <button class="tab-btn px-6 py-3 rounded-full text-sm font-medium bg-white dark:bg-darkcard border dark:border-gray-800 whitespace-nowrap" data-category="brunch">Brunch</button>
+                <button class="tab-btn px-6 py-3 rounded-full text-sm font-medium bg-white dark:bg-darkcard border dark:border-gray-800 whitespace-nowrap" data-category="main">Main Course</button>
+                <button class="tab-btn px-6 py-3 rounded-full text-sm font-medium bg-white dark:bg-darkcard border dark:border-gray-800 whitespace-nowrap" data-category="drinks">Drinks</button>
+                <button class="tab-btn px-6 py-3 rounded-full text-sm font-medium bg-white dark:bg-darkcard border dark:border-gray-800 whitespace-nowrap" data-category="pastry">Pastry</button>
+            </div>
+            <div id="dynamic-menu-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </div>
+    </section>
+
+    <section id="booking" class="py-24 bg-white dark:bg-darkcard">
+        <div class="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center">
+            <div class="gsap-reveal">
+                <h2 class="text-4xl font-serif font-bold mb-6">Secured Seating</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-8">Amankan meja Anda di lantai 1 (AC) atau lantai 2 (Smoking Area).</p>
+                <a href="tel:02152961475" class="text-2xl font-bold text-amber"></a>
+            </div>
+            <form id="booking-form" class="space-y-4 gsap-reveal p-8 bg-cream/20 dark:bg-darkbg/40 rounded-3xl border dark:border-gray-800">
+                <input type="text" id="book-name" required placeholder="Nama" class="w-full p-3 rounded-xl border dark:bg-darkcard dark:border-gray-800 outline-none focus:border-amber">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="date" id="book-date" required class="p-3 rounded-xl border dark:bg-darkcard dark:border-gray-800 outline-none focus:border-amber">
+                    <input type="time" id="book-time" required class="p-3 rounded-xl border dark:bg-darkcard dark:border-gray-800 outline-none focus:border-amber">
+                </div>
+                <button type="submit" class="w-full py-4 bg-green-600 text-white rounded-full font-bold hover:bg-green-700 transition-colors">WhatsApp Reservation</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="reviews" class="py-24 bg-cream dark:bg-darkbg">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-serif font-bold mb-12 gsap-reveal">What They Say</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-darkcard p-8 rounded-3xl shadow-sm gsap-reveal rotate-1 hover:shadow-lg transition-shadow">
+                    <p class="italic mb-4">"Kopi susunya juara, tempat paling asik buat nugas subuh."</p>
+                    <p class="font-bold">- Ahmad R.</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-8 rounded-3xl shadow-sm gsap-reveal -rotate-1 hover:shadow-lg transition-shadow">
+                    <p class="italic mb-4">"Vibe rustic-nya dapet banget. Nasi Lemak-nya wajib coba!"</p>
+                    <p class="font-bold">- Nadia V.</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-8 rounded-3xl shadow-sm gsap-reveal rotate-1 hover:shadow-lg transition-shadow">
+                    <p class="italic mb-4">"Staff ramah, colokan banyak, wifi kenceng. Best 24h cafe."</p>
+                    <p class="font-bold">- Dimas D.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="location" class="bg-espresso dark:bg-[#110E0C] text-cream pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-12 border-b border-white/10 pb-12">
+            <div>
+                <h4 class="font-serif font-bold text-2xl mb-6">Coffe.</h4>
+                <p class="opacity-70 text-sm">Jakarta</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6">Contact</h4>
+                <p class="opacity-70 text-sm"></p>
+                <div class="flex gap-4 mt-4 text-2xl">
+                    <a href="#" class="hover:text-amber transition-colors"><i class="ph ph-instagram-logo"></i></a>
+                    <a href="#" class="hover:text-amber transition-colors"><i class="ph ph-whatsapp-logo"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6">Order Online</h4>
+                <div class="flex flex-col gap-2">
+                    <span class="text-green-500 font-bold text-sm">GoFood</span>
+                    <span class="text-green-400 font-bold text-sm">GrabFood</span>
+                </div>
+            </div>
+        </div>
+        <div class="text-center pt-8 text-xs opacity-40">&copy; <span id="year"></span>Coffee</div>
+    </footer>
+
+    <script>
+        const menuData = [
+            { name: "Breakfast", price: "55K", category: "brunch", desc: "Sausage, eggs, toast, and salad.", img: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=500" },
+            { name: "Chicken", price: "35K", category: "brunch", desc: "Deep fried wings with BBQ sauce.", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=500" },
+            { name: "Salmon", price: "214K", category: "main", desc: "Salmon with spinach & potatoes.", img: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500" },
+            { name: "Fried Rice", price: "89K", category: "main", desc: "Indonesian smoky brisket rice.", img: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=500" },
+            { name: "Spaghetti ", price: "25K", category: "main", desc: "Creamy pasta with beef bacon.", img: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=500" },
+            { name: "Latte", price: "15K", category: "drinks", desc: "Frozen espresso blocks & milk.", img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500" },
+            { name: "Coffee", price: "48K", category: "drinks", desc: "Double shot with microfoam.", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500" },
+            { name: "Tiramisu ", price: "20K", category: "pastry", desc: "Espresso mascarpone filling.", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500" },
+            { name: "Red Velvet Cake", price: "38K", category: "pastry", desc: "Layered cocoa sponge.", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlW-RGiRfos0_CWXEtQ3KCTz0PcMdqT7U2G8X5Uscf_JA5K2YPeq5lrQ6lbXhb9hL8UQi_FgPbaHbynb5WHnedO5gfKR9bcz8yuWLAWNE0VQ&s=10w=500" }
+        ];
+
+        const renderMenu = (cat = "all", search = "") => {
+            const container = document.getElementById('dynamic-menu-container');
+            if(!container) return;
+            container.innerHTML = "";
+            const filtered = menuData.filter(i => (cat === "all" || i.category === cat) && i.name.toLowerCase().includes(search.toLowerCase()));
+            filtered.forEach(i => {
+                container.innerHTML += `
+                    <div class="bg-white dark:bg-darkcard rounded-3xl overflow-hidden border dark:border-gray-800 shadow-sm hover:shadow-lg transition-shadow">
+                        <div class="h-40 overflow-hidden"><img src="${i.img}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt="${i.name}"></div>
+                        <div class="p-5">
+                            <div class="flex justify-between font-bold"><span class="text-sm md:text-base">${i.name}</span><span class="text-amber text-sm md:text-base">${i.price}</span></div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">${i.desc}</p>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        const updateNav = () => {
+            const nav = document.getElementById('navbar');
+            const navItems = document.querySelectorAll('.nav-item, #nav-logo, #mobile-controls button');
+            if(!nav) return;
+
+            if (window.scrollY > 50) {
+                nav.classList.add('bg-white/90', 'dark:bg-darkbg/90', 'backdrop-blur-md', 'shadow-xl');
+                nav.classList.remove('bg-transparent');
+                navItems.forEach(el => {
+                    if (document.documentElement.classList.contains('dark')) {
+                        el.style.color = '#F5E6D3';
+                    } else {
+                        el.style.color = '#3E2723';
+                    }
+                });
+            } else {
+                nav.classList.remove('bg-white/90', 'dark:bg-darkbg/90', 'backdrop-blur-md', 'shadow-xl');
+                nav.classList.add('bg-transparent');
+                navItems.forEach(el => { el.style.color = 'white'; });
+            }
+        };
+
+        const closeMenuOnLink = () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.add('translate-x-full');
+        };
+
+        // DOM CONTENT LOADED EVENT
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Set Tahun Copyright
+            const yearEl = document.getElementById('year');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+            // 2. Render Menu Utama
+            renderMenu();
+
+            // 3. GSAP & ScrollTrigger Initialization
+            if (typeof gsap !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                gsap.from(".hero-elem", { y: 30, opacity: 0, stagger: 0.2, duration: 1 });
+                gsap.utils.toArray(".gsap-reveal").forEach(el => {
+                    gsap.set(el, { visibility: "visible" });
+                    gsap.from(el, { scrollTrigger: el, y: 30, opacity: 0, duration: 0.8 });
+                });
+            }
+
+            // 4. Navbar Scroll Listener
+            window.addEventListener('scroll', updateNav);
+
+            // 5. Pencarian Menu Input
+            const menuSearch = document.getElementById('menu-search');
+            if (menuSearch) {
+                menuSearch.addEventListener('input', (e) => {
+                    const activeTab = document.querySelector('.tab-btn.bg-amber');
+                    const category = activeTab ? activeTab.dataset.category : "all";
+                    renderMenu(category, e.target.value);
+                });
+            }
+
+            // 6. Filter Kategori Menu Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.className = "tab-btn px-6 py-3 rounded-full text-sm font-medium bg-white dark:bg-darkcard border dark:border-gray-800 whitespace-nowrap";
+                    });
+                    btn.className = "tab-btn px-6 py-3 rounded-full text-sm font-medium bg-amber text-white whitespace-nowrap";
+                    renderMenu(btn.dataset.category);
+                };
+            });
+
+            // 7. Dark/Light Theme Switcher Logic
+            const toggleTheme = () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            };
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) themeToggle.onclick = toggleTheme;
+
+            const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+            if (themeToggleMobile) themeToggleMobile.onclick = toggleTheme;
+
+            // 8. Mobile Menu Controls Fix
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+            if (mobileMenu) {
+                if (mobileMenuBtn) {
+                    mobileMenuBtn.onclick = () => mobileMenu.classList.remove('translate-x-full');
+                }
+                if (mobileMenuClose) {
+                    mobileMenuClose.onclick = () => mobileMenu.classList.add('translate-x-full');
+                }
+                // Klik link navigasi langsung menutup menu overlay
+                document.querySelectorAll('.mobile-link').forEach(link => {
+                    link.addEventListener('click', closeMenuOnLink);
+                });
+            }
+
+            // 9. Bonus Fix: WhatsApp Reservation Integrator
+            const bookingForm = document.getElementById('booking-form');
+            if(bookingForm) {
+                bookingForm.onsubmit = (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('book-name').value;
+                    const date = document.getElementById('book-date').value;
+                    const time = document.getElementById('book-time').value;
+                    const whatsappNumber = "622152961475"; // Diganti nomor kafe asli/tujuan
+                    const message = `Halo Lucky Cat, saya ingin reservasi meja atas nama *${name}* untuk tanggal *${date}* jam *${time}*.`;
+                    window.open(`https://wa.me/${6281237079018}?text=${encodeURIComponent(message)}`, '_blank');
+                };
+            }
+        });
+    </script>
+</body>
+</html>
